@@ -1,5 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
+import { ApiError } from "@/utils/ApiError";
+import { ApiResponse } from "@/utils/ApiResponse";
 import { sendVerificationEmail } from "@/utils/sendVerificationEmail";
 import bcrypt from "bcryptjs";
 
@@ -15,13 +17,7 @@ export async function POST(req: Request) {
 		});
 
 		if (alreadyExistingUserVerifiedByUsername) {
-			return Response.json(
-				{
-					success: false,
-					message: "Username is already taken",
-				},
-				{ status: 400 }
-			);
+			return new ApiError(400, "Username is already taken");
 		}
 
 		const existingUserByEmail = await UserModel.findOne({ email });
@@ -30,13 +26,7 @@ export async function POST(req: Request) {
 
 		if (existingUserByEmail) {
 			if (existingUserByEmail.isVerified) {
-				return Response.json(
-					{
-						success: false,
-						message: "User already exists with this email",
-					},
-					{ status: 400 }
-				);
+				return new ApiError(400, "User already exists with this email");
 			} else {
 				const hashedPassword = await bcrypt.hash(password, 10);
 				existingUserByEmail.password = hashedPassword;
@@ -72,31 +62,20 @@ export async function POST(req: Request) {
 		);
 
 		if (!emailResponse.success) {
-			return Response.json(
-				{
-					success: false,
-					message: emailResponse.message,
-				},
-				{ status: 500 }
-			);
+			return new ApiError(500, emailResponse.message);
 		}
 
-		return Response.json(
+		return new ApiResponse(
+			200,
 			{
 				success: true,
 				message:
 					"User registered successfully. Please verify your email",
 			},
-			{ status: 500 }
+			"User registered successfully. Please verify your email"
 		);
 	} catch (error) {
 		console.error("Error registering user", error);
-		return Response.json(
-			{
-				success: false,
-				message: "Error registering user",
-			},
-			{ status: 500 }
-		);
+		return new ApiError(500, "Error registering user");
 	}
 }

@@ -1,6 +1,8 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
 import { usernameValidation } from "@/schemas/signup.schema";
+import { ApiError } from "@/utils/ApiError";
+import { ApiResponse } from "@/utils/ApiResponse";
 import { z } from "zod";
 
 const UsernameQuerySchema = z.object({
@@ -9,13 +11,7 @@ const UsernameQuerySchema = z.object({
 
 export async function GET(request: Request) {
 	if (request.method !== "GET") {
-		return Response.json(
-			{
-				success: false,
-				message: "Method not allowed",
-			},
-			{ status: 405 }
-		);
+		return new Response("Method not allowed", { status: 405 });
 	}
 
 	await dbConnect();
@@ -31,15 +27,11 @@ export async function GET(request: Request) {
 		if (!result.success) {
 			const usernameErrors =
 				result.error.format().username?._errors || [];
-			return Response.json(
-				{
-					success: false,
-					message:
-						usernameErrors?.length > 0
-							? usernameErrors.join(", ")
-							: "Invliad query parameters",
-				},
-				{ status: 400 }
+			return new ApiError(
+				400,
+				usernameErrors?.length > 0
+					? usernameErrors.join(", ")
+					: "Invliad query parameters"
 			);
 		}
 
@@ -51,30 +43,15 @@ export async function GET(request: Request) {
 		});
 
 		if (existingVerifiedUser) {
-			return Response.json(
-				{
-					success: false,
-					message: "Username already taken",
-				},
-				{ status: 400 }
-			);
+			return new ApiError(400, "Username already taken");
 		}
 
-		return Response.json(
-			{
-				success: true,
-				message: "Username available",
-			},
-			{ status: 400 }
-		);
+		return new ApiResponse(200, {
+			success: true,
+			message: "Username available",
+		});
 	} catch (error) {
 		console.error("Error checking unique username", error);
-		return Response.json(
-			{
-				success: false,
-				message: "Error checking username",
-			},
-			{ status: 500 }
-		);
+		return new ApiError(500, "Error checking username");
 	}
 }

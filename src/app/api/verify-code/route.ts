@@ -1,15 +1,11 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
+import { ApiError } from "@/utils/ApiError";
+import { ApiResponse } from "@/utils/ApiResponse";
 
 export async function POST(request: Request) {
 	if (request.method !== "POST") {
-		return Response.json(
-			{
-				success: false,
-				message: "Method not allowed",
-			},
-			{ status: 405 }
-		);
+		return new Response("Method not allowed", { status: 405 });
 	}
 
 	await dbConnect();
@@ -22,13 +18,7 @@ export async function POST(request: Request) {
 		const user = await UserModel.findOne({ username: decodedUsername });
 
 		if (!user) {
-			return Response.json(
-				{
-					success: false,
-					message: "User not found",
-				},
-				{ status: 500 }
-			);
+			return new ApiError(500, "User not found");
 		}
 
 		const isCodeValid = user.verifyCode === code;
@@ -37,39 +27,17 @@ export async function POST(request: Request) {
 		if (isCodeValid && isCodeNotExpired) {
 			user.isVerified = true;
 			await user.save();
-			return Response.json(
-				{
-					success: true,
-					message: "Account verified successfully",
-				},
-				{ status: 200 }
-			);
+			return new ApiResponse(200, "Account verified successfully");
 		} else if (!isCodeNotExpired) {
-			return Response.json(
-				{
-					success: false,
-					message:
-						"Verification code has expired please sign up again to get a new code",
-				},
-				{ status: 400 }
+			return new ApiError(
+				400,
+				"Verification code has expired please sign up again to get a new code"
 			);
 		} else {
-			return Response.json(
-				{
-					success: false,
-					message: "Incorrect verification code",
-				},
-				{ status: 500 }
-			);
+			return new ApiError(500, "Incorrect verification code");
 		}
 	} catch (error) {
 		console.error("Error verifying username", error);
-		return Response.json(
-			{
-				success: false,
-				message: "Error verifying username",
-			},
-			{ status: 500 }
-		);
+		return new ApiError(500, "Error verifying username");
 	}
 }
