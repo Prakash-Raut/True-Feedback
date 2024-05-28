@@ -1,7 +1,5 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel, { Message } from "@/models/User.model";
-import { ApiError } from "@/utils/ApiError";
-import { ApiResponse } from "@/utils/ApiResponse";
 
 export async function POST(request: Request) {
 	await dbConnect();
@@ -12,11 +10,17 @@ export async function POST(request: Request) {
 		const user = await UserModel.findOne(username);
 
 		if (!user) {
-			return new ApiError(404, "User not found");
+			return Response.json(
+				{ message: "User not found", success: false },
+				{ status: 404 }
+			);
 		}
 
 		if (!user.isAcceptingMessage) {
-			return new ApiError(403, "User is not accepting messages");
+			return Response.json(
+				{ message: "User is not accepting messages", success: false },
+				{ status: 403 } // 403 Forbidden status
+			);
 		}
 
 		const newMessage = { content, createdAt: new Date() };
@@ -25,10 +29,15 @@ export async function POST(request: Request) {
 
 		await user.save();
 
-		return new ApiResponse(200, "Message sent successfully");
+		return Response.json(
+			{ message: "Message sent successfully", success: true },
+			{ status: 201 }
+		);
 	} catch (error) {
 		console.log("An unexpected error while sending messages: ", error);
-
-		return new ApiError(500, "Internal Server Error");
+		return Response.json(
+			{ message: "Internal server error", success: false },
+			{ status: 500 }
+		);
 	}
 }

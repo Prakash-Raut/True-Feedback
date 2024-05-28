@@ -1,7 +1,5 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
-import { ApiError } from "@/utils/ApiError";
-import { ApiResponse } from "@/utils/ApiResponse";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 
@@ -13,7 +11,10 @@ export async function POST(request: Request) {
 	const user: User = session?.user as User;
 
 	if (!session || !session.user) {
-		return new ApiError(401, "Not Authenticated");
+		return Response.json(
+			{ success: false, message: "Not authenticated" },
+			{ status: 401 }
+		);
 	}
 
 	const userId = user._id;
@@ -28,22 +29,31 @@ export async function POST(request: Request) {
 		);
 
 		if (!updatedUser) {
-			return new ApiError(
-				401,
-				"Failed to update user status to accept messages"
+			return Response.json(
+				{
+					success: false,
+					message:
+						"Unable to find user to update message acceptance status",
+				},
+				{ status: 404 }
 			);
 		}
-
-		return new ApiResponse(
-			200,
-			updatedUser,
-			"User status updated to accept messages"
+		return Response.json(
+			{
+				success: true,
+				message: "User status updated to accept messages",
+				updatedUser,
+			},
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Failed to update the user status to accept messages");
-		return new ApiError(
-			500,
-			"Failed to update the user status to accept messages"
+		return Response.json(
+			{
+				success: false,
+				message: "Failed to update the user status to accept messages",
+			},
+			{ status: 500 }
 		);
 	}
 }
@@ -56,7 +66,10 @@ export async function GET(request: Request) {
 	const user: User = session?.user as User;
 
 	if (!session || !session.user) {
-		return new ApiError(401, "Not Authenticated");
+		return Response.json(
+			{ success: false, message: "Not authenticated" },
+			{ status: 401 }
+		);
 	}
 
 	const userId = user._id;
@@ -65,19 +78,28 @@ export async function GET(request: Request) {
 		const foundUser = await UserModel.findById(userId);
 
 		if (!foundUser) {
-			return new ApiError(404, "User not found");
+			return Response.json(
+				{ success: false, message: "User not found" },
+				{ status: 404 }
+			);
 		}
 
-		return new ApiResponse(
-			200,
-			{ isAcceptingMessages: foundUser.isAcceptingMessage, user },
-			"User status to accept messages fetched successfully"
+		return Response.json(
+			{
+				success: true,
+				message: "User status to accept messages fetched successfully",
+				isAcceptingMessages: foundUser.isAcceptingMessage,
+			},
+			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Failed to fetch the user status to accept messages");
-		return new ApiError(
-			500,
-			"Failed to fetch the user status to accept messages"
+		console.error("Error retrieving message acceptance status");
+		return Response.json(
+			{
+				success: false,
+				message: "Error retrieving message acceptance status",
+			},
+			{ status: 500 }
 		);
 	}
 }

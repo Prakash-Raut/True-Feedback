@@ -1,7 +1,5 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
-import { ApiError } from "@/utils/ApiError";
-import { ApiResponse } from "@/utils/ApiResponse";
 
 export async function POST(request: Request) {
 	if (request.method !== "POST") {
@@ -18,7 +16,10 @@ export async function POST(request: Request) {
 		const user = await UserModel.findOne({ username: decodedUsername });
 
 		if (!user) {
-			return new ApiError(500, "User not found");
+			return Response.json(
+				{ success: false, message: "User not found" },
+				{ status: 404 }
+			);
 		}
 
 		const isCodeValid = user.verifyCode === code;
@@ -27,17 +28,30 @@ export async function POST(request: Request) {
 		if (isCodeValid && isCodeNotExpired) {
 			user.isVerified = true;
 			await user.save();
-			return new ApiResponse(200, "Account verified successfully");
+			return Response.json(
+				{ success: true, message: "Account verified successfully" },
+				{ status: 200 }
+			);
 		} else if (!isCodeNotExpired) {
-			return new ApiError(
-				400,
-				"Verification code has expired please sign up again to get a new code"
+			return Response.json(
+				{
+					success: false,
+					message:
+						"Verification code has expired. Please sign up again to get a new code.",
+				},
+				{ status: 400 }
 			);
 		} else {
-			return new ApiError(500, "Incorrect verification code");
+			return Response.json(
+				{ success: false, message: "Incorrect verification code" },
+				{ status: 400 }
+			);
 		}
 	} catch (error) {
 		console.error("Error verifying username", error);
-		return new ApiError(500, "Error verifying username");
+		return Response.json(
+			{ success: false, message: "Error verifying user" },
+			{ status: 500 }
+		);
 	}
 }

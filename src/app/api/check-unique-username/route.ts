@@ -2,7 +2,6 @@ import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
 import { usernameValidation } from "@/schemas/signup.schema";
 import { ApiError } from "@/utils/ApiError";
-import { ApiResponse } from "@/utils/ApiResponse";
 import { z } from "zod";
 
 const UsernameQuerySchema = z.object({
@@ -10,10 +9,6 @@ const UsernameQuerySchema = z.object({
 });
 
 export async function GET(request: Request) {
-	if (request.method !== "GET") {
-		return new Response("Method not allowed", { status: 405 });
-	}
-
 	await dbConnect();
 
 	try {
@@ -27,11 +22,15 @@ export async function GET(request: Request) {
 		if (!result.success) {
 			const usernameErrors =
 				result.error.format().username?._errors || [];
-			return new ApiError(
-				400,
-				usernameErrors?.length > 0
-					? usernameErrors.join(", ")
-					: "Invliad query parameters"
+			return Response.json(
+				{
+					success: false,
+					message:
+						usernameErrors?.length > 0
+							? usernameErrors.join(", ")
+							: "Invalid query parameters",
+				},
+				{ status: 400 }
 			);
 		}
 
@@ -46,12 +45,21 @@ export async function GET(request: Request) {
 			return new ApiError(400, "Username already taken");
 		}
 
-		return new ApiResponse(200, {
-			success: true,
-			message: "Username available",
-		});
+		return Response.json(
+			{
+				success: true,
+				message: "Username available",
+			},
+			{ status: 200 }
+		);
 	} catch (error) {
 		console.error("Error checking unique username", error);
-		return new ApiError(500, "Error checking username");
+		return Response.json(
+			{
+				success: false,
+				message: "Error checking username",
+			},
+			{ status: 500 }
+		);
 	}
 }

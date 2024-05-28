@@ -18,16 +18,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounceValue, useDebounceCallback } from "usehooks-ts";
 import * as z from "zod";
 
-export default function SignIn() {
+export default function SignUp() {
 	const [username, setUsername] = useState<string>("");
 	const [usernameMessage, setUsernameMessage] = useState<string>("");
 	const [isCheckingUsername, setIsCheckingUsername] =
 		useState<boolean>(false);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const debouncedUsername = useDebounceValue(username, 500);
+	const debounced = useDebounceCallback(setUsername, 500);
 	const { toast } = useToast();
 	const router = useRouter();
 
@@ -43,14 +43,15 @@ export default function SignIn() {
 
 	useEffect(() => {
 		const checkUniqueUsername = async () => {
-			if (debouncedUsername) {
+			if (username) {
 				setIsCheckingUsername(true);
 				setUsernameMessage("Checking username...");
 				try {
 					const response = await axios.get(
-						`/api/check-unique-username?username=${debouncedUsername}`
+						`/api/check-unique-username?username=${username}`
 					);
-					setUsernameMessage(response.data.message);
+					let message = response.data.message;
+					setUsernameMessage(message);
 				} catch (error) {
 					const axiosError = error as AxiosError<ApiResponse>;
 					setUsernameMessage(
@@ -63,7 +64,7 @@ export default function SignIn() {
 			}
 		};
 		checkUniqueUsername();
-	}, [debouncedUsername]);
+	}, [username]);
 
 	const onSubmit = async (data: z.infer<typeof signupSchema>) => {
 		setIsSubmitting(true);
@@ -118,7 +119,7 @@ export default function SignIn() {
 										{...field}
 										onChange={(e) => {
 											field.onChange(e);
-											setUsername(e.target.value);
+											debounced(e.target.value);
 										}}
 									/>
 									{isCheckingUsername && (
