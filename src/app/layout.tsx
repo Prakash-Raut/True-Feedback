@@ -8,7 +8,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Mystery Message",
+	title: "True Speech",
 	description: "Send and receive messages anonymously.",
 };
 

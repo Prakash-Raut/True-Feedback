@@ -1,7 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
 import { usernameValidation } from "@/schemas/signup.schema";
-import { ApiError } from "@/utils/ApiError";
 import { z } from "zod";
 
 const UsernameQuerySchema = z.object({
@@ -42,7 +41,13 @@ export async function GET(request: Request) {
 		});
 
 		if (existingVerifiedUser) {
-			return new ApiError(400, "Username already taken");
+			return Response.json(
+				{
+					success: false,
+					message: "Username already taken",
+				},
+				{ status: 409 }
+			);
 		}
 
 		return Response.json(

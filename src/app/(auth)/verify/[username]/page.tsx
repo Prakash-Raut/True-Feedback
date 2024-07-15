@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useToast } from "@/components/ui/use-toast";
 import { verifySchema } from "@/schemas/verify.schema";
-import { ApiResponse } from "@/utils/ApiResponse";
+import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
@@ -35,9 +35,9 @@ export default function VerifyAccount() {
 
 	const onSubmit = async (data: z.infer<typeof verifySchema>) => {
 		try {
-			const response = await axios.post(`/api/verify-code`, {
+			const response = await axios.post<ApiResponse>(`/api/verify-code`, {
 				username: param.username,
-				verifyCode: data.verifyCode,
+				code: data.code,
 			});
 
 			toast({
@@ -77,7 +77,7 @@ export default function VerifyAccount() {
 					>
 						<FormField
 							control={form.control}
-							name="verifyCode"
+							name="code"
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Verification Code</FormLabel>

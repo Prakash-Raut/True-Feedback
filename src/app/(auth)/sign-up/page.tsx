@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { signupSchema } from "@/schemas/signup.schema";
-import { ApiResponse } from "@/utils/ApiResponse";
+import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
@@ -94,11 +94,11 @@ export default function SignUp() {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-800">
-			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+		<div className="flex justify-center items-center min-h-screen">
+			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md border-2 border-slate-950">
 				<div className="text-center">
 					<h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-						Join True Feedback
+						Join True Speech
 					</h1>
 					<p className="mb-4">
 						Sign up to start your anonymous adventure
@@ -117,6 +117,7 @@ export default function SignUp() {
 									<FormLabel>Username</FormLabel>
 									<Input
 										{...field}
+										placeholder="Username"
 										onChange={(e) => {
 											field.onChange(e);
 											debounced(e.target.value);
@@ -151,6 +152,7 @@ export default function SignUp() {
 										{...field}
 										name="email"
 										type="email"
+										placeholder="Email"
 									/>
 									<p className="text-muted text-gray-400 text-sm">
 										We will send you a verification code
@@ -170,6 +172,7 @@ export default function SignUp() {
 										type="password"
 										{...field}
 										name="password"
+										placeholder="Password"
 									/>
 									<FormMessage />
 								</FormItem>

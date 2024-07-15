@@ -5,5 +5,5 @@ export const verifyCodeValidation = z
     .length(6, {message: "Verification code must be atleast 6 digits"})
 
 export const verifySchema = z.object({
-    verifyCode: verifyCodeValidation
+    code: verifyCodeValidation
 })

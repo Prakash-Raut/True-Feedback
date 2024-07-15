@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -32,39 +31,54 @@ export default function SignIn() {
 	});
 
 	const onSubmit = async (data: z.infer<typeof signinSchema>) => {
-		const result = await signIn("credentials", {
-			identifier: data.identifier,
-			password: data.password,
-			redirect: false,
-		});
-
-		if (result?.error) {
-			if (result.error === "CredentialsSignin") {
-				toast({
-					title: "Login Failed",
-					description: "Incorrect username or password",
-					variant: "destructive",
-				});
-			} else {
-				toast({
-					title: "Error",
-					description: result.error,
-					variant: "destructive",
-				});
+		console.log("clicked");
+		
+		try {
+			console.log("Signing in...");
+			
+			const result = await signIn("credentials", {
+				redirect: false,
+				identifier: data.identifier,
+				password: data.password,
+			});
+	
+			if (result?.error) {
+				console.log(result.error);
+				if (result.error === "CredentialsSignin") {
+					toast({
+						title: "Login Failed",
+						description: "Incorrect username or password",
+						variant: "destructive",
+					});
+				} else {
+					toast({
+						title: "Error",
+						description: result.error,
+						variant: "destructive",
+					});
+				}
 			}
-		}
-
-		if (result?.url) {
+	
 			router.replace("/dashboard");
+			if (result?.url) {
+			}
+			console.log("Signed in successfully");
+		} catch (error) {
+			console.error("Error signing in:", error);
+			toast({
+				title: "Error",
+				description: "An unexpected error occurred while signing in.",
+				variant: "destructive",
+			});
 		}
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-slate-950">
-			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+		<div className="flex justify-center items-center min-h-screen">
+			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md border-2 border-slate-900">
 				<div className="text-center">
 					<h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-						Welcome Back to Mystery Message
+						Welcome Back to True Speech
 					</h1>
 					<p className="mb-4">
 						Sign in to continue your secret conversations
@@ -80,8 +94,13 @@ export default function SignIn() {
 							control={form.control}
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Email address or Username</FormLabel>
-									<Input placeholder="Email address or Username" {...field} />
+									<FormLabel>
+										Email address or Username
+									</FormLabel>
+									<Input
+										placeholder="Email address or Username"
+										{...field}
+									/>
 									<FormMessage />
 								</FormItem>
 							)}
