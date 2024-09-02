@@ -17,7 +17,6 @@ export async function GET(request: Request) {
 		};
 		// validate with zod
 		const result = UsernameQuerySchema.safeParse(queryParam);
-		console.log("Unique username check :: Username Query Schema ", result);
 		if (!result.success) {
 			const usernameErrors =
 				result.error.format().username?._errors || [];
@@ -58,7 +57,6 @@ export async function GET(request: Request) {
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Error checking unique username", error);
 		return Response.json(
 			{
 				success: false,

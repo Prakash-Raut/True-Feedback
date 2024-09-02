@@ -11,7 +11,7 @@ export async function sendVerificationEmail(
 		await resend.emails.send({
 			from: "onboarding@resend.dev",
 			to: email,
-			subject: "Mystery Message | Verification Code",
+			subject: "True Speech | Verification Code",
 			react: VerificationEmail({username: username, otp: verifyCode}),
 		});
 
@@ -20,7 +20,6 @@ export async function sendVerificationEmail(
 			message: "Verification email send successfully",
 		};
 	} catch (emailError) {
-		console.error("Error sending verification email", emailError);
 		return { success: false, message: "Failed to send verification email" };
 	}
 }

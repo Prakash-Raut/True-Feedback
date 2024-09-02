@@ -12,7 +12,6 @@ export async function POST(req: Request) {
 
 		return new StreamingTextResponse(result.toAIStream());
 	} catch (error) {
-		console.error("An unexpected error while suggesting messages: ", error);
 		throw error;
 	}
 }

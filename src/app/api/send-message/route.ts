@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 	const { username, content } = await request.json();
 
 	try {
-		const user = await UserModel.findOne(username);
+		const user = await UserModel.findOne({username});
 
 		if (!user) {
 			return Response.json(
@@ -34,7 +34,6 @@ export async function POST(request: Request) {
 			{ status: 201 }
 		);
 	} catch (error) {
-		console.log("An unexpected error while sending messages: ", error);
 		return Response.json(
 			{ message: "Internal server error", success: false },
 			{ status: 500 }

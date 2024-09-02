@@ -31,19 +31,14 @@ export default function SignIn() {
 	});
 
 	const onSubmit = async (data: z.infer<typeof signinSchema>) => {
-		console.log("clicked");
-		
 		try {
-			console.log("Signing in...");
-			
 			const result = await signIn("credentials", {
 				redirect: false,
 				identifier: data.identifier,
 				password: data.password,
 			});
-	
+
 			if (result?.error) {
-				console.log(result.error);
 				if (result.error === "CredentialsSignin") {
 					toast({
 						title: "Login Failed",
@@ -58,13 +53,16 @@ export default function SignIn() {
 					});
 				}
 			}
-	
-			router.replace("/dashboard");
+
 			if (result?.url) {
+				toast({
+					title: "Success",
+					description: "You have successfully signed in.",
+					variant: "default",
+				});
+				router.replace("/dashboard");
 			}
-			console.log("Signed in successfully");
 		} catch (error) {
-			console.error("Error signing in:", error);
 			toast({
 				title: "Error",
 				description: "An unexpected error occurred while signing in.",
@@ -75,7 +73,7 @@ export default function SignIn() {
 
 	return (
 		<div className="flex justify-center items-center min-h-screen">
-			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md border-2 border-slate-900">
+			<div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md border-2">
 				<div className="text-center">
 					<h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
 						Welcome Back to True Speech

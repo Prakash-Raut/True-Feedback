@@ -15,7 +15,7 @@ export default function Home() {
 	return (
 		<div className="flex flex-col min-h-screen">
 			{/* Main content */}
-			<main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 bg-white text-slate-800">
+			<main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24">
 				<section className="text-center mb-8 md:mb-12">
 					<div className="relative isolate px-6 lg:px-8">
 						<div
@@ -33,11 +33,11 @@ export default function Home() {
 						<div className="mx-auto max-w-2xl">
 							<div className="text-center">
 								<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-7xl">
-								Dive into the World of True Speech
+									Dive into the World of True Speech
 								</h1>
 								<p className="leading-7 [&:not(:first-child)]:mt-6">
-									True Speech - Where your identity remains
-									a secret.
+									True Speech - Where your identity remains a
+									secret.
 								</p>
 							</div>
 						</div>
@@ -76,8 +76,8 @@ export default function Home() {
 			</main>
 
 			{/* Footer */}
-			<footer className="text-center p-4 md:p-6 bg-gray-900 text-white">
-				© 2024 True Speech. All rights reserved.
+			<footer className="text-center p-4 md:p-6">
+				© {new Date().getFullYear()} True Speech. All rights reserved.
 			</footer>
 		</div>
 	);

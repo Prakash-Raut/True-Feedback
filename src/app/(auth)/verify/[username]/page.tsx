@@ -47,7 +47,6 @@ export default function VerifyAccount() {
 
 			router.replace("/sign-in");
 		} catch (error) {
-			console.error("Error in sign-up", error);
 			const axiosError = error as AxiosError<ApiResponse>;
 			let errorMessage =
 				axiosError.response?.data.message || "Error in sign-up";
@@ -60,8 +59,8 @@ export default function VerifyAccount() {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-100">
-			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+		<div className="flex justify-center items-center min-h-screen">
+			<div className="w-full max-w-md p-8 space-y-8 border rounded-lg shadow-md">
 				<div className="text-center">
 					<h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
 						Verify Your Account

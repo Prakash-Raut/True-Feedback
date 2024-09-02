@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 
-export async function GET(request: Request) {
+export async function GET() {
 	await dbConnect();
 
 	const session = await getServerSession(authOptions);
@@ -21,6 +21,11 @@ export async function GET(request: Request) {
 	const userId = new mongoose.Types.ObjectId(user._id);
 
 	try {
+
+		const foundUser = await UserModel.findById(userId);
+
+		console.log("FOUND USER:: ", foundUser);
+
 		const user = await UserModel.aggregate([
 			{ $match: { _id: userId } },
 			{ $unwind: "$messages" },
@@ -31,7 +36,7 @@ export async function GET(request: Request) {
 					messages: { $push: "$messages" },
 				},
 			},
-		]);
+		]).exec();
 
 		if (!user || user.length === 0) {
 			return Response.json(
@@ -42,7 +47,6 @@ export async function GET(request: Request) {
 
 		return Response.json({ messages: user[0].messages }, { status: 200 });
 	} catch (error) {
-		console.log("An unexpected error while getting messages: ", error);
 		return Response.json(
 			{ message: "Internal server error", success: false },
 			{ status: 500 }

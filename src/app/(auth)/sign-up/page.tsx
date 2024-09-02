@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDebounceValue, useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "usehooks-ts";
 import * as z from "zod";
 
 export default function SignUp() {
@@ -79,7 +79,6 @@ export default function SignUp() {
 			});
 			router.replace(`/verify/${username}`);
 		} catch (error) {
-			console.error("Error in sign-up", error);
 			const axiosError = error as AxiosError<ApiResponse>;
 			let errorMessage =
 				axiosError.response?.data.message || "Error in sign-up";
@@ -95,7 +94,7 @@ export default function SignUp() {
 
 	return (
 		<div className="flex justify-center items-center min-h-screen">
-			<div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md border-2 border-slate-950">
+			<div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md border-2">
 				<div className="text-center">
 					<h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
 						Join True Speech
@@ -131,8 +130,8 @@ export default function SignUp() {
 											className={`text-sm ${
 												usernameMessage ===
 												"Username is unique"
-													? "text-green-500"
-													: "text-red-500"
+												? "text-red-500"
+													: "text-green-500"
 											}`}
 										>
 											{usernameMessage}
@@ -154,7 +153,7 @@ export default function SignUp() {
 										type="email"
 										placeholder="Email"
 									/>
-									<p className="text-muted text-gray-400 text-sm">
+									<p className="text-muted text-sm">
 										We will send you a verification code
 									</p>
 									<FormMessage />

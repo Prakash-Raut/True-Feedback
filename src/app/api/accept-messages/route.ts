@@ -47,7 +47,6 @@ export async function POST(request: Request) {
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Failed to update the user status to accept messages");
 		return Response.json(
 			{
 				success: false,
@@ -93,7 +92,6 @@ export async function GET(request: Request) {
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Error retrieving message acceptance status");
 		return Response.json(
 			{
 				success: false,
