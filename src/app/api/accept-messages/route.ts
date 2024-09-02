@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 	const { acceptingMessages } = await request.json();
 
 	try {
-		const updatedUser = await UserModel.findById(
+		const updatedUser = await UserModel.findByIdAndUpdate(
 			userId,
 			{ isAcceptingMessage: acceptingMessages },
 			{ new: true }
@@ -74,7 +74,9 @@ export async function GET(request: Request) {
 	const userId = user._id;
 
 	try {
-		const foundUser = await UserModel.findById(userId);
+		const foundUser = await UserModel.findById({
+			_id: userId,
+		});
 
 		if (!foundUser) {
 			return Response.json(

@@ -21,11 +21,6 @@ export async function GET() {
 	const userId = new mongoose.Types.ObjectId(user._id);
 
 	try {
-
-		const foundUser = await UserModel.findById(userId);
-
-		console.log("FOUND USER:: ", foundUser);
-
 		const user = await UserModel.aggregate([
 			{ $match: { _id: userId } },
 			{ $unwind: "$messages" },
